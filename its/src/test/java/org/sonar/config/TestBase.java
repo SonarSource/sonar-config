@@ -41,10 +41,7 @@ public abstract class TestBase {
   @ClassRule
   public static final Orchestrator ORCHESTRATOR = ConfigTestSuite.ORCHESTRATOR;
 
-  protected SonarScanner getSonarScanner(String projectKey, String directoryToScan, String languageKey, String profileName) {
-    ORCHESTRATOR.getServer().provisionProject(projectKey, projectKey);
-    ORCHESTRATOR.getServer().associateProjectToQualityProfile(projectKey, languageKey, profileName);
-
+  protected SonarScanner getSonarScanner(String projectKey, String directoryToScan) {
     return SonarScanner.create()
       .setProjectDir(new File(directoryToScan))
       .setProjectKey(projectKey)

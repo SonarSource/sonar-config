@@ -34,7 +34,7 @@ class ConfigPluginTest {
   @Test
   void sonarqube_extensions() {
     Plugin.Context context = new PluginContextImpl.Builder()
-      .setSonarRuntime(SonarRuntimeImpl.forSonarQube(Version.create(7, 8), SonarQubeSide.SCANNER, SonarEdition.DEVELOPER))
+      .setSonarRuntime(SonarRuntimeImpl.forSonarQube(Version.create(8, 9), SonarQubeSide.SCANNER, SonarEdition.DEVELOPER))
       .build();
     new ConfigPlugin().define(context);
     assertThat(context.getExtensions()).hasSize(3);

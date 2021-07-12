@@ -19,25 +19,54 @@
  */
 package org.sonar.config;
 
+import com.sonar.orchestrator.build.SonarScanner;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class YamlTest extends TestBase {
 
+  private static final String PROJECT_KEY = "yamlProject";
+  private static final String LANGUAGE_KEY = "yaml";
+  private static final String PROFILE_NAME = "yaml-profile";
+
+  @BeforeClass
+  public static void setup() {
+    ORCHESTRATOR.getServer().provisionProject(PROJECT_KEY, PROJECT_KEY);
+    ORCHESTRATOR.getServer().associateProjectToQualityProfile(PROJECT_KEY, LANGUAGE_KEY, PROFILE_NAME);
+  }
+
+  @AfterClass
+  public static void teardown() {
+    if (ORCHESTRATOR != null) {
+      ORCHESTRATOR.stop();
+    }
+  }
+
   @Test
   public void yaml_measures() {
-    final String projectKey = "yamlProject";
-    ORCHESTRATOR.executeBuild(getSonarScanner(projectKey, "projects/yaml-project", "yaml", "yaml-profile"));
+    ORCHESTRATOR.executeBuild(getSonarScanner(PROJECT_KEY, "projects/yaml-project"));
 
-    assertThat(getMeasureAsInt(projectKey, "files")).isEqualTo(3);
+    assertThat(getMeasureAsInt(PROJECT_KEY, "files")).isEqualTo(3);
 
-    final String file1 = projectKey + ":file1.yaml";
+    final String file1 = PROJECT_KEY + ":file1.yaml";
 
     // No metric is pushed to SonarQube
     assertThat(getMeasureAsInt(file1, "ncloc")).isNull();
     assertThat(getMeasureAsInt(file1, "comment_lines")).isNull();
     assertThat(getMeasure(file1, "ncloc_data")).isNull();
+  }
+
+  @Test
+  public void yaml_measures_with_custom_file_suffixes() {
+    final String projectKey = "yamlProject";
+    SonarScanner scanner = getSonarScanner(projectKey, "projects/yaml-project");
+    scanner.setProperty("sonar.yaml.file.suffixes", ".yaml,.yml,.raml");
+    ORCHESTRATOR.executeBuild(scanner);
+
+    assertThat(getMeasureAsInt(projectKey, "files")).isEqualTo(4);
   }
 
 }
