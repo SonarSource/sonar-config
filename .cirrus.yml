@@ -1,0 +1,93 @@
+gcp_credentials: ENCRYPTED[!17c59813193e86cc337bce848b358412b90f50bc5fe1b8b39d363cdf14a41ebe76cfba0482e7f81d076994b9f6dbfb4c!]
+
+env:
+  ARTIFACTORY_URL: ENCRYPTED[!2f8fa307d3289faa0aa6791f18b961627ae44f1ef46b136e1a1e63b0b4c86454dbb25520d49b339e2d50a1e1e5f95c88!]
+  ARTIFACTORY_PRIVATE_USERNAME: repox-private-reader
+  ARTIFACTORY_PRIVATE_PASSWORD: ENCRYPTED[!35ca4446564213d4fd2d1a96e42a871d5de6e6aac4e1dd3e89342892a60a2badf74a966bcc8e885e9c9d09a775ffe4c0!]
+  ARTIFACTORY_DEPLOY_USERNAME: repox-qa-deployer
+  ARTIFACTORY_DEPLOY_PASSWORD: ENCRYPTED[!d484e19f33c9ce63b165f70e414a33b1ac6c215a126791aacbf8059626caf0fd8a78e999a20af5c1a4ba01c0b0247921!]
+  #Possible values for ARTIFACTORY_DEPLOY_REPO: sonarsource-private-qa, sonarsource-public-qa
+  ARTIFACTORY_DEPLOY_REPO: sonarsource-public-qa
+  ARTIFACTORY_API_KEY: ENCRYPTED[!35ca4446564213d4fd2d1a96e42a871d5de6e6aac4e1dd3e89342892a60a2badf74a966bcc8e885e9c9d09a775ffe4c0!]
+  # burgr notification
+  BURGR_URL: ENCRYPTED[!c7e294da94762d7bac144abef6310c5db300c95979daed4454ca977776bfd5edeb557e1237e3aa8ed722336243af2d78!]
+  BURGR_USERNAME: ENCRYPTED[!b29ddc7610116de511e74bec9a93ad9b8a20ac217a0852e94a96d0066e6e822b95e7bc1fe152afb707f16b70605fddd3!]
+  BURGR_PASSWORD: ENCRYPTED[!83e130718e92b8c9de7c5226355f730e55fb46e45869149a9223e724bb99656878ef9684c5f8cfef434aa716e87f4cf2!]
+  GITHUB_TOKEN: ENCRYPTED[!f272985ea5b49b3cf9c414b98de6a8e9096be47bfcee52f33311ba3131a2af637c1b956f49585b7757dd84b7c030233a!]
+  # Use bash (instead of sh on linux or cmd.exe on windows)
+  CIRRUS_SHELL: bash
+  # Allows to run builds for the 50 last commits in a branch:
+  CIRRUS_CLONE_DEPTH: 1
+
+linux_image_template: &LINUX_IMAGE
+  image: gcr.io/language-team/base:latest
+  cluster_name: cirrus-ci-lt-cluster
+  zone: us-central1-a
+  namespace: default
+  use_in_memory_disk: true
+
+linux_1_cpu_1G_template: &LINUX_1_CPU_1G
+  gke_container:
+    <<: *LINUX_IMAGE
+    cpu: 1
+    memory: 1G
+
+only_sonarsource_qa: &ONLY_IF_SONARSOURCE_QA
+  only_if: $CIRRUS_USER_COLLABORATOR == 'true' && ($CIRRUS_PR != "" || $CIRRUS_BRANCH == "master" || $CIRRUS_BRANCH =~ "branch-.*" || $CIRRUS_BRANCH =~ "dogfood-on-.*")
+
+qa_task_filter_template: &QA_TASK_FILTER
+  depends_on:
+    - build
+  <<: *ONLY_IF_SONARSOURCE_QA
+
+build_task:
+  <<: *LINUX_1_CPU_1G
+  env:
+    SIGN_KEY: ENCRYPTED[!cc216dfe592f79db8006f2a591f8f98b40aa2b078e92025623594976fd32f6864c1e6b6ba74b50647f608e2418e6c336!]
+    PGP_PASSPHRASE: ENCRYPTED[!314a8fc344f45e462dd5e8dccd741d7562283a825e78ebca27d4ae9db8e65ce618e7f6aece386b2782a5abe5171467bd!]
+    # analysis on next
+    SONAR_TOKEN: ENCRYPTED[!b6fd814826c51e64ee61b0b6f3ae621551f6413383f7170f73580e2e141ac78c4b134b506f6288c74faa0dd564c05a29!]
+    SONAR_HOST_URL: https://next.sonarqube.com/sonarqube
+    #allow deployment of pull request artifacts to repox
+    DEPLOY_PULL_REQUEST: true
+  maven_cache:
+    folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+  build_script:
+    - source cirrus-env BUILD
+    - regular_mvn_build_deploy_analyze
+  cleanup_before_cache_script: cleanup_maven_repository
+
+qa_plugin_task:
+  <<: *QA_TASK_FILTER
+  <<: *LINUX_1_CPU_1G
+  env:
+    matrix:
+      - SQ_VERSION: LATEST_RELEASE[8.9]
+      - SQ_VERSION: DOGFOOD
+  maven_cache:
+    folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+  submodules_script:
+    - git submodule update --init
+  plugin_script:
+    - source cirrus-env QA
+    - source set_maven_build_version $BUILD_NUMBER
+    - cd its
+    - mvn verify -Pits -Drevision=${PROJECT_VERSION} -Dsonar.runtimeVersion=${SQ_VERSION} -B -e -V
+  cleanup_before_cache_script: cleanup_maven_repository
+
+promote_task:
+  depends_on:
+    - build
+    - qa_plugin
+  <<: *ONLY_IF_SONARSOURCE_QA
+  <<: *LINUX_1_CPU_1G
+  env:
+    #promotion cloud function
+    GCF_ACCESS_TOKEN: ENCRYPTED[!1fb91961a5c01e06e38834e55755231d649dc62eca354593105af9f9d643d701ae4539ab6a8021278b8d9348ae2ce8be!]
+    PROMOTE_URL: ENCRYPTED[!e22ed2e34a8f7a1aea5cff653585429bbd3d5151e7201022140218f9c5d620069ec2388f14f83971e3fd726215bc0f5e!]
+    #artifacts that will have downloadable links in burgr
+    ARTIFACTS: org.sonarsource.config:sonar-config-plugin:jar
+  maven_cache:
+    folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+  script: cirrus_promote_maven
+  cleanup_before_cache_script: cleanup_maven_repository
