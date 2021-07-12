@@ -19,15 +19,22 @@
  */
 package org.sonar.plugins.config;
 
-import org.sonar.api.Plugin;
+import org.junit.jupiter.api.Test;
+import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 
-public class ConfigPlugin implements Plugin {
+import static org.assertj.core.api.Assertions.assertThat;
 
-  @Override
-  public void define(Context context) {
-    context.addExtension(YamlLanguage.class);
-    context.addExtension(YamlLanguage.getProperty());
-    context.addExtension(YamlBuiltInProfileDefinition.class);
+class YamlBuiltInProfileDefinitionTest {
+
+  @Test
+  void should_create_sonar_way_profile() {
+    BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
+    YamlBuiltInProfileDefinition definition = new YamlBuiltInProfileDefinition();
+    definition.define(context);
+    BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("yaml", "Sonar way");
+    assertThat(profile.language()).isEqualTo("yaml");
+    assertThat(profile.name()).isEqualTo("Sonar way");
+    assertThat(profile.rules()).isEmpty();
   }
 
 }

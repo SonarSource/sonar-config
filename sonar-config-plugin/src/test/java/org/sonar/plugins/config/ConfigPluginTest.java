@@ -20,26 +20,24 @@
 package org.sonar.plugins.config;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.api.config.internal.MapSettings;
+import org.sonar.api.Plugin;
+import org.sonar.api.SonarEdition;
+import org.sonar.api.SonarQubeSide;
+import org.sonar.api.internal.PluginContextImpl;
+import org.sonar.api.internal.SonarRuntimeImpl;
+import org.sonar.api.utils.Version;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class YamlLanguageTest {
+class ConfigPluginTest {
 
   @Test
-  void should_return_terraform_file_suffixes() {
-    MapSettings settings = new MapSettings();
-    YamlLanguage language = new YamlLanguage(settings.asConfig());
-    assertThat(language.getFileSuffixes()).containsExactly(".json", ".yaml", ".yml");
-
-    settings.setProperty(YamlLanguage.FILE_SUFFIXES_KEY, "");
-    assertThat(language.getFileSuffixes()).containsExactly(".json", ".yaml", ".yml");
-
-    settings.setProperty(YamlLanguage.FILE_SUFFIXES_KEY, ".bar, .foo");
-    assertThat(language.getFileSuffixes()).containsOnly(".bar", ".foo");
-
-    settings.setProperty(YamlLanguage.FILE_SUFFIXES_KEY, ".foo, , ");
-    assertThat(language.getFileSuffixes()).containsOnly(".foo");
+  void sonarqube_extensions() {
+    Plugin.Context context = new PluginContextImpl.Builder()
+      .setSonarRuntime(SonarRuntimeImpl.forSonarQube(Version.create(7, 8), SonarQubeSide.SCANNER, SonarEdition.DEVELOPER))
+      .build();
+    new ConfigPlugin().define(context);
+    assertThat(context.getExtensions()).hasSize(3);
   }
 
 }

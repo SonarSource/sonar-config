@@ -41,7 +41,7 @@
 
   <modules>
     <module>sonar-config-plugin</module>
-  <!--  <module>its</module> -->
+    <module>its</module>
   </modules>
 
   <scm>
@@ -57,8 +57,8 @@
   </issueManagement>
 
   <ciManagement>
-    <system>Travis</system>
-    <url>https://travis-ci.org/SonarSource/sonar-config</url>
+    <system>Cirrus CI</system>
+    <url>https://cirrus-ci.com/github/SonarSource/sonar-config</url>
   </ciManagement>
 
   <properties>
@@ -90,6 +90,11 @@
         <groupId>com.google.code.findbugs</groupId>
         <artifactId>jsr305</artifactId>
         <version>${findbugs.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonarsource.analyzer-commons</groupId>
+        <artifactId>sonar-analyzer-commons</artifactId>
+        <version>${analyzer.commons.version}</version>
       </dependency>
 
       <!-- Test dependencies -->

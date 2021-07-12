@@ -19,15 +19,17 @@
  */
 package org.sonar.plugins.config;
 
-import org.sonar.api.Plugin;
+import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 
-public class ConfigPlugin implements Plugin {
+public class YamlBuiltInProfileDefinition implements BuiltInQualityProfilesDefinition {
+
+  private static final String PROFILE_NAME = "Sonar way";
 
   @Override
   public void define(Context context) {
-    context.addExtension(YamlLanguage.class);
-    context.addExtension(YamlLanguage.getProperty());
-    context.addExtension(YamlBuiltInProfileDefinition.class);
+    NewBuiltInQualityProfile profile = context.createBuiltInQualityProfile(PROFILE_NAME, YamlLanguage.KEY);
+    profile.setDefault(true);
+    profile.done();
   }
 
 }

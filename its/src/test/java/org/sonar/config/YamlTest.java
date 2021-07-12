@@ -17,29 +17,27 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.config;
+package org.sonar.config;
 
-import org.junit.jupiter.api.Test;
-import org.sonar.api.Plugin;
-import org.sonar.api.SonarEdition;
-import org.sonar.api.SonarQubeSide;
-import org.sonar.api.internal.PluginContextImpl;
-import org.sonar.api.internal.SonarRuntimeImpl;
-import org.sonar.api.utils.Version;
+import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ConfigPluginTest {
-
-  private static final Version VERSION_8_9 = Version.create(8, 9);
+public class YamlTest extends TestBase {
 
   @Test
-  void sonarqube_extensions() {
-    Plugin.Context context = new PluginContextImpl.Builder()
-      .setSonarRuntime(SonarRuntimeImpl.forSonarQube(Version.create(7, 8), SonarQubeSide.SCANNER, SonarEdition.DEVELOPER))
-      .build();
-    new ConfigPlugin().define(context);
-    assertThat(context.getExtensions()).hasSize(2);
+  public void yaml_measures() {
+    final String projectKey = "yamlProject";
+    ORCHESTRATOR.executeBuild(getSonarScanner(projectKey, "projects/yaml-project", "yaml", "yaml-profile"));
+
+    assertThat(getMeasureAsInt(projectKey, "files")).isEqualTo(3);
+
+    final String file1 = projectKey + ":file1.yaml";
+
+    // No metric is pushed to SonarQube
+    assertThat(getMeasureAsInt(file1, "ncloc")).isNull();
+    assertThat(getMeasureAsInt(file1, "comment_lines")).isNull();
+    assertThat(getMeasure(file1, "ncloc_data")).isNull();
   }
 
 }
