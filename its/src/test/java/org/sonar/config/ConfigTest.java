@@ -26,16 +26,15 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class YamlTest extends TestBase {
+public class ConfigTest extends TestBase {
 
-  private static final String PROJECT_KEY = "yamlProject";
-  private static final String LANGUAGE_KEY = "yaml";
-  private static final String PROFILE_NAME = "yaml-profile";
+  private static final String PROJECT_KEY = "configProject";
 
   @BeforeClass
   public static void setup() {
     ORCHESTRATOR.getServer().provisionProject(PROJECT_KEY, PROJECT_KEY);
-    ORCHESTRATOR.getServer().associateProjectToQualityProfile(PROJECT_KEY, LANGUAGE_KEY, PROFILE_NAME);
+    ORCHESTRATOR.getServer().associateProjectToQualityProfile(PROJECT_KEY, "yaml", "yaml-profile");
+    ORCHESTRATOR.getServer().associateProjectToQualityProfile(PROJECT_KEY, "json", "json-profile");
   }
 
   @AfterClass
@@ -47,13 +46,14 @@ public class YamlTest extends TestBase {
 
   @Test
   public void yaml_measures() {
-    ORCHESTRATOR.executeBuild(getSonarScanner(PROJECT_KEY, "projects/yaml-project"));
+    ORCHESTRATOR.executeBuild(getSonarScanner(PROJECT_KEY, "projects/config-project"));
 
-    assertThat(getMeasureAsInt(PROJECT_KEY, "files")).isEqualTo(3);
+    assertThat(getMeasureAsInt(PROJECT_KEY, "files")).isEqualTo(4);
 
     final String file1 = PROJECT_KEY + ":file1.yaml";
 
-    // No metric is pushed to SonarQube
+    // No metric is pushed to SonarQube, only the "lines" metric computed by SonarQube is available
+    assertThat(getMeasureAsInt(file1, "lines")).isEqualTo(8);
     assertThat(getMeasureAsInt(file1, "ncloc")).isNull();
     assertThat(getMeasureAsInt(file1, "comment_lines")).isNull();
     assertThat(getMeasure(file1, "ncloc_data")).isNull();
@@ -61,12 +61,13 @@ public class YamlTest extends TestBase {
 
   @Test
   public void yaml_measures_with_custom_file_suffixes() {
-    final String projectKey = "yamlProject";
-    SonarScanner scanner = getSonarScanner(projectKey, "projects/yaml-project");
-    scanner.setProperty("sonar.yaml.file.suffixes", ".yaml,.yml,.raml");
+    SonarScanner scanner = getSonarScanner(PROJECT_KEY, "projects/config-project");
+    scanner.setProperty("sonar.yaml.file.suffixes", ".yml,.raml");
+    scanner.setProperty("sonar.json.file.suffixes", ".jsn");
     ORCHESTRATOR.executeBuild(scanner);
 
-    assertThat(getMeasureAsInt(projectKey, "files")).isEqualTo(4);
+    assertThat(getMeasureAsInt(PROJECT_KEY, "files")).isEqualTo(3);
+    assertThat(getMeasureAsInt(PROJECT_KEY + ":file.jsn", "lines")).isEqualTo(10);
   }
 
 }

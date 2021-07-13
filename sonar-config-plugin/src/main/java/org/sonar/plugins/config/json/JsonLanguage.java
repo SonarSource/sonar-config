@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.config;
+package org.sonar.plugins.config.json;
 
 import java.util.Arrays;
 import org.sonar.api.config.Configuration;
@@ -26,19 +26,19 @@ import org.sonar.api.resources.AbstractLanguage;
 import org.sonar.api.resources.Qualifiers;
 
 /**
- * This class defines the YAML language.
+ * This class defines the JSON language.
  */
-public class YamlLanguage extends AbstractLanguage {
+public class JsonLanguage extends AbstractLanguage {
 
-  public static final String KEY = "yaml";
-  public static final String NAME = "YAML";
-  public static final String YAML_CATEGORY = "YAML";
-  public static final String FILE_SUFFIXES_KEY = "sonar.yaml.file.suffixes";
-  public static final String DEFAULT_FILE_SUFFIXES = ".yaml,.yml";
+  public static final String KEY = "json";
+  public static final String NAME = "JSON";
+  public static final String JSON_CATEGORY = "JSON";
+  public static final String FILE_SUFFIXES_KEY = "sonar.json.file.suffixes";
+  public static final String DEFAULT_FILE_SUFFIXES = ".json";
 
   private final Configuration configuration;
 
-  public YamlLanguage(Configuration configuration) {
+  public JsonLanguage(Configuration configuration) {
     super(KEY, NAME);
     this.configuration = configuration;
   }
@@ -54,9 +54,9 @@ public class YamlLanguage extends AbstractLanguage {
     return PropertyDefinition.builder(FILE_SUFFIXES_KEY)
       .defaultValue(DEFAULT_FILE_SUFFIXES)
       .name("File Suffixes")
-      .description("List of suffixes of YAML files to be indexed.")
+      .description("List of suffixes of JSON files to be indexed.")
       .onQualifiers(Qualifiers.PROJECT)
-      .category(YAML_CATEGORY)
+      .category(JSON_CATEGORY)
       .subCategory("General")
       .multiValues(true)
       .build();

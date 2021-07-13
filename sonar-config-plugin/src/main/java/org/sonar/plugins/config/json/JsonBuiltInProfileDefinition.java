@@ -17,25 +17,19 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.config;
+package org.sonar.plugins.config.json;
 
-import org.sonar.api.Plugin;
-import org.sonar.plugins.config.json.JsonBuiltInProfileDefinition;
-import org.sonar.plugins.config.json.JsonLanguage;
-import org.sonar.plugins.config.yaml.YamlBuiltInProfileDefinition;
-import org.sonar.plugins.config.yaml.YamlLanguage;
+import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 
-public class ConfigPlugin implements Plugin {
+public class JsonBuiltInProfileDefinition implements BuiltInQualityProfilesDefinition {
+
+  private static final String PROFILE_NAME = "Sonar way";
 
   @Override
   public void define(Context context) {
-    context.addExtension(YamlLanguage.class);
-    context.addExtension(YamlLanguage.getProperty());
-    context.addExtension(YamlBuiltInProfileDefinition.class);
-
-    context.addExtension(JsonLanguage.class);
-    context.addExtension(JsonLanguage.getProperty());
-    context.addExtension(JsonBuiltInProfileDefinition.class);
+    NewBuiltInQualityProfile profile = context.createBuiltInQualityProfile(PROFILE_NAME, JsonLanguage.KEY);
+    profile.setDefault(true);
+    profile.done();
   }
 
 }

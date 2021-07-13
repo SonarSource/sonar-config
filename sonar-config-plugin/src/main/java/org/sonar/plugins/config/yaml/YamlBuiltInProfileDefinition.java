@@ -17,29 +17,19 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.config;
+package org.sonar.plugins.config.yaml;
 
-import org.junit.jupiter.api.Test;
-import org.sonar.api.config.internal.MapSettings;
+import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 
-import static org.assertj.core.api.Assertions.assertThat;
+public class YamlBuiltInProfileDefinition implements BuiltInQualityProfilesDefinition {
 
-class YamlLanguageTest {
+  private static final String PROFILE_NAME = "Sonar way";
 
-  @Test
-  void should_return_yaml_file_suffixes() {
-    MapSettings settings = new MapSettings();
-    YamlLanguage language = new YamlLanguage(settings.asConfig());
-    assertThat(language.getFileSuffixes()).containsExactly(".yaml", ".yml");
-
-    settings.setProperty(YamlLanguage.FILE_SUFFIXES_KEY, "");
-    assertThat(language.getFileSuffixes()).containsExactly(".yaml", ".yml");
-
-    settings.setProperty(YamlLanguage.FILE_SUFFIXES_KEY, ".bar, .foo");
-    assertThat(language.getFileSuffixes()).containsOnly(".bar", ".foo");
-
-    settings.setProperty(YamlLanguage.FILE_SUFFIXES_KEY, ".foo, , ");
-    assertThat(language.getFileSuffixes()).containsOnly(".foo");
+  @Override
+  public void define(Context context) {
+    NewBuiltInQualityProfile profile = context.createBuiltInQualityProfile(PROFILE_NAME, YamlLanguage.KEY);
+    profile.setDefault(true);
+    profile.done();
   }
 
 }
