@@ -37,7 +37,7 @@ class ConfigPluginTest {
       .setSonarRuntime(SonarRuntimeImpl.forSonarQube(Version.create(8, 9), SonarQubeSide.SCANNER, SonarEdition.DEVELOPER))
       .build();
     new ConfigPlugin().define(context);
-    assertThat(context.getExtensions()).hasSize(3);
+    assertThat(context.getExtensions()).hasSize(6);
   }
 
 }

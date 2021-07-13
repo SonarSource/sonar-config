@@ -17,25 +17,29 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.config;
+package org.sonar.plugins.config.json;
 
-import org.sonar.api.Plugin;
-import org.sonar.plugins.config.json.JsonBuiltInProfileDefinition;
-import org.sonar.plugins.config.json.JsonLanguage;
-import org.sonar.plugins.config.yaml.YamlBuiltInProfileDefinition;
-import org.sonar.plugins.config.yaml.YamlLanguage;
+import org.junit.jupiter.api.Test;
+import org.sonar.api.config.internal.MapSettings;
 
-public class ConfigPlugin implements Plugin {
+import static org.assertj.core.api.Assertions.assertThat;
 
-  @Override
-  public void define(Context context) {
-    context.addExtension(YamlLanguage.class);
-    context.addExtension(YamlLanguage.getProperty());
-    context.addExtension(YamlBuiltInProfileDefinition.class);
+class JsonLanguageTest {
 
-    context.addExtension(JsonLanguage.class);
-    context.addExtension(JsonLanguage.getProperty());
-    context.addExtension(JsonBuiltInProfileDefinition.class);
+  @Test
+  void should_return_yaml_file_suffixes() {
+    MapSettings settings = new MapSettings();
+    JsonLanguage language = new JsonLanguage(settings.asConfig());
+    assertThat(language.getFileSuffixes()).containsExactly(".json");
+
+    settings.setProperty(JsonLanguage.FILE_SUFFIXES_KEY, "");
+    assertThat(language.getFileSuffixes()).containsExactly(".json");
+
+    settings.setProperty(JsonLanguage.FILE_SUFFIXES_KEY, ".bar, .foo");
+    assertThat(language.getFileSuffixes()).containsOnly(".bar", ".foo");
+
+    settings.setProperty(JsonLanguage.FILE_SUFFIXES_KEY, ".foo, , ");
+    assertThat(language.getFileSuffixes()).containsOnly(".foo");
   }
 
 }
