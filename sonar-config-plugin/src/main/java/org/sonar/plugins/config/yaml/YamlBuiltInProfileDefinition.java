@@ -17,24 +17,19 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.config;
+package org.sonar.plugins.config.yaml;
 
-import org.junit.jupiter.api.Test;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 
-import static org.assertj.core.api.Assertions.assertThat;
+public class YamlBuiltInProfileDefinition implements BuiltInQualityProfilesDefinition {
 
-class YamlBuiltInProfileDefinitionTest {
+  private static final String PROFILE_NAME = "Sonar way";
 
-  @Test
-  void should_create_sonar_way_profile() {
-    BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
-    YamlBuiltInProfileDefinition definition = new YamlBuiltInProfileDefinition();
-    definition.define(context);
-    BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("yaml", "Sonar way");
-    assertThat(profile.language()).isEqualTo("yaml");
-    assertThat(profile.name()).isEqualTo("Sonar way");
-    assertThat(profile.rules()).isEmpty();
+  @Override
+  public void define(Context context) {
+    NewBuiltInQualityProfile profile = context.createBuiltInQualityProfile(PROFILE_NAME, YamlLanguage.KEY);
+    profile.setDefault(true);
+    profile.done();
   }
 
 }

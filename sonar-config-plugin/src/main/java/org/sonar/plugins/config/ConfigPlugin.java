@@ -20,6 +20,8 @@
 package org.sonar.plugins.config;
 
 import org.sonar.api.Plugin;
+import org.sonar.plugins.config.yaml.YamlBuiltInProfileDefinition;
+import org.sonar.plugins.config.yaml.YamlLanguage;
 
 public class ConfigPlugin implements Plugin {
 
