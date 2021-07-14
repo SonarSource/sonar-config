@@ -60,10 +60,6 @@ build_task:
 qa_plugin_task:
   <<: *QA_TASK_FILTER
   <<: *LINUX_1_CPU_1G
-  env:
-    #matrix:
-      #- SQ_VERSION: LATEST_RELEASE[8.9]
-      #- SQ_VERSION: DOGFOOD
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   submodules_script:
@@ -72,7 +68,7 @@ qa_plugin_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its
-    - mvn verify -P its # -Drevision=${PROJECT_VERSION} -Dsonar.runtimeVersion=${SQ_VERSION} -B -e -V
+    - mvn verify -P its
   cleanup_before_cache_script: cleanup_maven_repository
 
 promote_task:
