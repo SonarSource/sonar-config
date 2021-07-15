@@ -73,7 +73,7 @@
                   <overWrite>true</overWrite>
                 </artifactItem>
               </artifactItems>
-              <outputDirectory>../../sonar-config-plugin/target</outputDirectory>
+              <outputDirectory>../sonar-config-plugin/target</outputDirectory>
               <overWriteReleases>true</overWriteReleases>
               <overWriteSnapshots>true</overWriteSnapshots>
             </configuration>
