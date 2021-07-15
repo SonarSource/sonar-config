@@ -32,6 +32,12 @@ linux_1_cpu_1G_template: &LINUX_1_CPU_1G
     cpu: 1
     memory: 1G
 
+linux_4_cpu_8G_template: &LINUX_2_CPU_4G
+  gke_container:
+    <<: *LINUX_IMAGE
+    cpu: 2
+    memory: 4G
+
 only_sonarsource_qa: &ONLY_IF_SONARSOURCE_QA
   only_if: $CIRRUS_USER_COLLABORATOR == 'true' && ($CIRRUS_PR != "" || $CIRRUS_BRANCH == "master" || $CIRRUS_BRANCH =~ "branch-.*" || $CIRRUS_BRANCH =~ "dogfood-on-.*")
 
@@ -59,7 +65,7 @@ build_task:
 
 qa_plugin_task:
   <<: *QA_TASK_FILTER
-  <<: *LINUX_1_CPU_1G
+  <<: *LINUX_2_CPU_4G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   submodules_script:
