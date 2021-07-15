@@ -68,7 +68,7 @@ qa_plugin_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its
-    - mvn verify -P its
+    - mvn verify -P its -X
   cleanup_before_cache_script: cleanup_maven_repository
 
 promote_task:
