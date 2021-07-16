@@ -66,6 +66,7 @@
           <sonarLintSupported>false</sonarLintSupported>
           <sonarQubeMinVersion>8.9</sonarQubeMinVersion>
           <skipDependenciesPackaging>true</skipDependenciesPackaging>
+
         </configuration>
       </plugin>
       <plugin>
