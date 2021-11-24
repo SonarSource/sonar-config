@@ -30,6 +30,6 @@ public class JsonFileFilter implements InputFileFilter {
       return true;
     }
 
-    return !inputFile.filename().contains("build-wrapper-dump.json");
+    return !inputFile.filename().contains("build-wrapper-dump");
   }
 }
