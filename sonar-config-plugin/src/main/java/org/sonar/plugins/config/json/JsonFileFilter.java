@@ -17,27 +17,19 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.config;
+package org.sonar.plugins.config.json;
 
-import org.junit.jupiter.api.Test;
-import org.sonar.api.Plugin;
-import org.sonar.api.SonarEdition;
-import org.sonar.api.SonarQubeSide;
-import org.sonar.api.internal.PluginContextImpl;
-import org.sonar.api.internal.SonarRuntimeImpl;
-import org.sonar.api.utils.Version;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.InputFileFilter;
 
-import static org.assertj.core.api.Assertions.assertThat;
+public class JsonFileFilter implements InputFileFilter {
 
-class ConfigPluginTest {
+  @Override
+  public boolean accept(InputFile inputFile) {
+    if (!JsonLanguage.KEY.equals(inputFile.language())) {
+      return true;
+    }
 
-  @Test
-  void sonarqube_extensions() {
-    Plugin.Context context = new PluginContextImpl.Builder()
-      .setSonarRuntime(SonarRuntimeImpl.forSonarQube(Version.create(8, 9), SonarQubeSide.SCANNER, SonarEdition.DEVELOPER))
-      .build();
-    new ConfigPlugin().define(context);
-    assertThat(context.getExtensions()).hasSize(7);
+    return !inputFile.filename().contains("build-wrapper-dump");
   }
-
 }

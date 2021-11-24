@@ -21,6 +21,7 @@ package org.sonar.plugins.config;
 
 import org.sonar.api.Plugin;
 import org.sonar.plugins.config.json.JsonBuiltInProfileDefinition;
+import org.sonar.plugins.config.json.JsonFileFilter;
 import org.sonar.plugins.config.json.JsonLanguage;
 import org.sonar.plugins.config.yaml.YamlBuiltInProfileDefinition;
 import org.sonar.plugins.config.yaml.YamlLanguage;
@@ -34,6 +35,7 @@ public class ConfigPlugin implements Plugin {
     context.addExtension(YamlBuiltInProfileDefinition.class);
 
     context.addExtension(JsonLanguage.class);
+    context.addExtension(JsonFileFilter.class);
     context.addExtension(JsonLanguage.getProperty());
     context.addExtension(JsonBuiltInProfileDefinition.class);
   }
