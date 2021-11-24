@@ -17,27 +17,19 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.config;
+package org.sonar.plugins.config.json;
 
-import org.sonar.api.Plugin;
-import org.sonar.plugins.config.json.JsonBuiltInProfileDefinition;
-import org.sonar.plugins.config.json.JsonFileFilter;
-import org.sonar.plugins.config.json.JsonLanguage;
-import org.sonar.plugins.config.yaml.YamlBuiltInProfileDefinition;
-import org.sonar.plugins.config.yaml.YamlLanguage;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.InputFileFilter;
 
-public class ConfigPlugin implements Plugin {
+public class JsonFileFilter implements InputFileFilter {
 
   @Override
-  public void define(Context context) {
-    context.addExtension(YamlLanguage.class);
-    context.addExtension(YamlLanguage.getProperty());
-    context.addExtension(YamlBuiltInProfileDefinition.class);
+  public boolean accept(InputFile inputFile) {
+    if (!JsonLanguage.KEY.equals(inputFile.language())) {
+      return true;
+    }
 
-    context.addExtension(JsonLanguage.class);
-    context.addExtension(JsonFileFilter.class);
-    context.addExtension(JsonLanguage.getProperty());
-    context.addExtension(JsonBuiltInProfileDefinition.class);
+    return !inputFile.filename().contains("build-wrapper-dump.json");
   }
-
 }
