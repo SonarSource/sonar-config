@@ -31,13 +31,15 @@ class JsonFileFilterTest {
   @Test
   void build_wrapper_file_is_excluded() {
     JsonFileFilter filter = new JsonFileFilter();
-    assertThat(filter.accept(inputFile("build_wrapper_output_directory/build-wrapper-dump.json"))).isFalse();
+    assertThat(filter.accept(inputFile("build_wrapper_output_directory/build-wrapper-dump.json", "json"))).isFalse();
+    assertThat(filter.accept(inputFile("build_wrapper_output_directory/foo.json", "json"))).isTrue();
+    assertThat(filter.accept(inputFile("foo.php", "php"))).isTrue();
   }
 
-  private DefaultInputFile inputFile(String file) {
+  private DefaultInputFile inputFile(String file, String lang) {
     return new TestInputFileBuilder("test", file)
       .setCharset(StandardCharsets.UTF_8)
-      .setLanguage("json")
+      .setLanguage(lang)
       .setContents("foo")
       .build();
   }
