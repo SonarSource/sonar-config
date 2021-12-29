@@ -41,5 +41,13 @@ class YamlLanguageTest {
     settings.setProperty(YamlLanguage.FILE_SUFFIXES_KEY, ".foo, , ");
     assertThat(language.getFileSuffixes()).containsOnly(".foo");
   }
+  
+  @Test
+  void should_not_publish_all_files() {
+    MapSettings settings = new MapSettings();
+    YamlLanguage language = new YamlLanguage(settings.asConfig());
+    
+    assertThat(language.publishAllFiles()).isFalse();
+  }
 
 }

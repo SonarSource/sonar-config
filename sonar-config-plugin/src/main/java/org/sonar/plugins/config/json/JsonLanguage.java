@@ -49,6 +49,11 @@ public class JsonLanguage extends AbstractLanguage {
       .filter(s -> !s.trim().isEmpty()).toArray(String[]::new);
     return suffixes.length > 0 ? suffixes : DEFAULT_FILE_SUFFIXES.split(",");
   }
+  
+  //add @Override once updated to Plugin API 9.3
+  public boolean publishAllFiles() {
+	  return false;
+  }
 
   public static PropertyDefinition getProperty() {
     return PropertyDefinition.builder(FILE_SUFFIXES_KEY)

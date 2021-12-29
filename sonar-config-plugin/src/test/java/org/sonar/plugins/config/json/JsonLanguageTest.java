@@ -41,5 +41,13 @@ class JsonLanguageTest {
     settings.setProperty(JsonLanguage.FILE_SUFFIXES_KEY, ".foo, , ");
     assertThat(language.getFileSuffixes()).containsOnly(".foo");
   }
+  
+  @Test
+  void should_not_publish_all_files() {
+    MapSettings settings = new MapSettings();
+    JsonLanguage language = new JsonLanguage(settings.asConfig());
+    
+    assertThat(language.publishAllFiles()).isFalse();
+  }
 
 }
