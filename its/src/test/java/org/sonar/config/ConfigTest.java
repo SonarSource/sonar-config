@@ -48,15 +48,19 @@ public class ConfigTest extends TestBase {
   public void yaml_measures() {
     ORCHESTRATOR.executeBuild(getSonarScanner(PROJECT_KEY, "projects/config-project"));
 
-    assertThat(getMeasureAsInt(PROJECT_KEY, "files")).isEqualTo(4);
+    if (publishFiles()) {
+      assertThat(getMeasureAsInt(PROJECT_KEY, "files")).isEqualTo(4);
 
-    final String file1 = PROJECT_KEY + ":file1.yaml";
+      final String file1 = PROJECT_KEY + ":file1.yaml";
 
-    // No metric is pushed to SonarQube, only the "lines" metric computed by SonarQube is available
-    assertThat(getMeasureAsInt(file1, "lines")).isEqualTo(8);
-    assertThat(getMeasureAsInt(file1, "ncloc")).isNull();
-    assertThat(getMeasureAsInt(file1, "comment_lines")).isNull();
-    assertThat(getMeasure(file1, "ncloc_data")).isNull();
+      // No metric is pushed to SonarQube, only the "lines" metric computed by SonarQube is available
+      assertThat(getMeasureAsInt(file1, "lines")).isEqualTo(8);
+      assertThat(getMeasureAsInt(file1, "ncloc")).isNull();
+      assertThat(getMeasureAsInt(file1, "comment_lines")).isNull();
+      assertThat(getMeasure(file1, "ncloc_data")).isNull();
+    } else {
+      assertThat(getMeasureAsInt(PROJECT_KEY, "files")).isNull();
+    }
   }
 
   @Test
@@ -66,8 +70,19 @@ public class ConfigTest extends TestBase {
     scanner.setProperty("sonar.json.file.suffixes", ".jsn");
     ORCHESTRATOR.executeBuild(scanner);
 
-    assertThat(getMeasureAsInt(PROJECT_KEY, "files")).isEqualTo(3);
-    assertThat(getMeasureAsInt(PROJECT_KEY + ":file.jsn", "lines")).isEqualTo(10);
+    if (publishFiles()) {
+      assertThat(getMeasureAsInt(PROJECT_KEY, "files")).isEqualTo(3);
+      assertThat(getMeasureAsInt(PROJECT_KEY + ":file.jsn", "lines")).isEqualTo(10);
+    } else {
+      assertThat(getMeasureAsInt(PROJECT_KEY, "files")).isNull();
+    }
+  }
+
+  /**
+   * Since SonarQube version 9.3 the plugin does not publish indexed files anymore.
+   */
+  private static boolean publishFiles() {
+    return !ORCHESTRATOR.getServer().version().isGreaterThan(9, 2);
   }
 
 }
