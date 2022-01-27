@@ -25,8 +25,7 @@ jobs:
         uses: SonarSource/gh-action_release/main@v3
         with:
           publish_to_binaries: true
-          attach_artifacts_to_github_release: true
-          slack_channel: team-lang-iac
+          slack_channel: team-lang-phpy-notifs
       - name: Release action results
         if: always()
         run: |
