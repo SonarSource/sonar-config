@@ -40,6 +40,7 @@ public class ConfigTestSuite {
 
   static {
     ORCHESTRATOR = Orchestrator.builderEnv()
+      .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty(SQ_VERSION_PROPERTY, DEFAULT_SQ_VERSION))
       .addPlugin(CONFIG_PLUGIN_LOCATION)
       .restoreProfileAtStartup(FileLocation.of("src/test/resources/yaml-profile.xml"))
