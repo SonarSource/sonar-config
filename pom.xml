@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.sonarsource.parent</groupId>
     <artifactId>parent</artifactId>
-    <version>66.0.234</version>
+    <version>68.0.0.247</version>
   </parent>
 
   <groupId>org.sonarsource.config</groupId>
@@ -74,6 +74,10 @@
     <gitRepositoryName>sonar-config</gitRepositoryName>
     <!-- Release: enable publication to Bintray -->
     <artifactsToPublish>${project.groupId}:sonar-config-plugin:jar</artifactsToPublish>
+
+    <jdk.min.version>17</jdk.min.version>
+    <!-- Overrides property from parent POM to support classes compiled with Java 17 -->
+    <version.shade.plugin>3.5.0</version.shade.plugin>
   </properties>
 
   <dependencyManagement>

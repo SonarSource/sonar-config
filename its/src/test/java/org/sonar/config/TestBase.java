@@ -40,9 +40,11 @@ public abstract class TestBase {
 
   @ClassRule
   public static final Orchestrator ORCHESTRATOR = ConfigTestSuite.ORCHESTRATOR;
+  private static final String SCANNER_VERSION = "5.0.1.3006";
 
   protected SonarScanner getSonarScanner(String projectKey, String directoryToScan) {
     return SonarScanner.create()
+      .setScannerVersion(SCANNER_VERSION)
       .setProjectDir(new File(directoryToScan))
       .setProjectKey(projectKey)
       .setProjectName(projectKey)
